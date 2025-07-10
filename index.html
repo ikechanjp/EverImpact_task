@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -54,6 +54,7 @@
 
     let tasks = getInitialProjectPlan();
     let currentUser = null;
+    let showMembers = false;
 
     const getSavedUsers = () => JSON.parse(localStorage.getItem('users') || '[]');
     const saveUserIfNew = (name) => {
@@ -74,13 +75,16 @@
 
     const renderApp = () => {
       const root = document.getElementById('app');
-      root.innerHTML = headerHtml() + mainHtml() + footerHtml();
+      root.innerHTML = headerHtml() + (showMembers ? membersSectionHtml() : '') + mainHtml() + footerHtml();
       lucide.createIcons();
     };
 
     const headerHtml = () => `
-      <header class="mb-8 text-center">
-        <h1 class="text-4xl font-extrabold tracking-wide drop-shadow-lg">【EverImpact】Member Progress Report</h1>
+      <header class="mb-8">
+        <div class="flex flex-col items-center gap-4">
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-wide drop-shadow-lg text-center">【EverImpact】Member Progress Report</h1>
+          <button class="px-4 py-2 rounded-md bg-neon-pink hover:bg-neon-purple transition text-sm" onclick="toggleMembers()">メンバー</button>
+        </div>
         ${userSectionHtml()}
       </header>`;
 
@@ -92,12 +96,27 @@
           <form id="userForm" class="flex gap-2 flex-wrap justify-center">
             <input id="userInput" type="text" placeholder="あなたの名前" class="px-4 py-2 rounded-md bg-white/20 backdrop-blur placeholder-white/70 text-white focus:outline-none"/>
             <button class="px-4 py-2 rounded-md bg-neon-yellow text-black font-bold hover:bg-white/80 transition">スタート</button>
+            <button type="button" onclick="deleteUser()" class="px-4 py-2 rounded-md bg-red-500 hover:bg-red-700 transition text-sm">削除</button>
           </form>
-          ${users.length ? `<div class="flex flex-wrap gap-2 justify-center">${users.map(u => `<span class="px-3 py-1 bg-white/20 rounded-full cursor-pointer hover:bg-white/40 transition text-sm" onclick="selectUser('${u}')">${u}</span>`).join('')}</div>` : ''}
+          ${users.length ? `<div class=\"flex flex-wrap gap-2 justify-center\">${users.map(u => `<span class=\"px-3 py-1 bg-white/20 rounded-full cursor-pointer hover:bg-white/40 transition text-sm\" onclick=\"selectUser('${u}')\">${u}</span>`).join('')}</div>` : ''}
         </div>`;
     };
 
-    const mainHtml = () => `<main id="tasksArea">${tasks.map(taskCardHtml).join('')}</main>`;
+    const membersSectionHtml = () => {
+      const users = getSavedUsers();
+      if (!users.length) return '';
+      const total = getInitialProjectPlan().length;
+      const list = users.map(u => ({ name: u, percent: (() => {
+        const data = localStorage.getItem(`tasks_${u}`);
+        if(!data) return 0;
+        const ts = JSON.parse(data);
+        const comp = ts.filter(t=>t.completed).length;
+        return Math.round(comp/total*100);
+      })() })).sort((a,b)=>b.percent-a.percent);
+      return `<section class=\"w-full max-w-md mx-auto mt-10 mb-10 space-y-4\">${list.map(item=>`<div class=\"flex items-center space-x-3\"><span class=\"w-24 truncate\">${item.name}</span><div class=\"flex-1 bg-white/20 rounded-full h-4\"><div class=\"bg-neon-yellow h-4 rounded-full\" style=\"width:${item.percent}%\"></div></div><span class=\"w-12 text-right\">${item.percent}%</span></div>`).join('')}</section>`;
+    };
+
+    const mainHtml = () => `<main id=\"tasksArea\">${tasks.map(taskCardHtml).join('')}</main>`;
 
     const footerHtml = () => `<footer class="text-center mt-10 text-xs text-white/70">&copy; ${new Date().getFullYear()} プログレスレポート</footer>`;
 
@@ -153,7 +172,18 @@
       else { task.completed=!task.completed; task.subtasks.forEach(st=>st.completed=task.completed);} tasks=newTasks; saveState(); renderApp(); };
 
     window.selectUser = (name)=>{ currentUser=name; loadState(name); renderApp(); };
-    window.changeUser = ()=>{ currentUser=null; renderApp(); };
+    window.toggleMembers = () => { showMembers = !showMembers; renderApp(); };
+
+    window.deleteUser = () => {
+      const input = document.getElementById('userInput');
+      const name = input ? input.value.trim() : '';
+      if(!name) return;
+      const users = getSavedUsers().filter(u => u !== name);
+      localStorage.setItem('users', JSON.stringify(users));
+      localStorage.removeItem(`tasks_${name}`);
+      if(currentUser === name) currentUser = null;
+      renderApp();
+    };
 
     document.addEventListener('submit',e=>{ if(e.target&&e.target.id==='userForm'){ e.preventDefault(); const name=document.getElementById('userInput').value.trim(); if(!name)return; currentUser=name; saveUserIfNew(name); loadState(name); renderApp(); }});
 
@@ -161,9 +191,6 @@
   </script>
 </body>
 </html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>縲職verImpact縲閃ember Progress Report</title>
   <!-- Tailwind CSS CDN -->
@@ -221,6 +248,7 @@
     // ===== 迥ｶ諷・=====
     let tasks = getInitialProjectPlan();
     let currentUser = null;
+    let showMembers = false;
 
     // ===== 繝ｦ繝ｼ繧ｶ繝ｼ荳隕ｧ縺ｮ蜿門ｾ・=====
     const getSavedUsers = () => {
@@ -247,7 +275,7 @@
     // ===== DOM =====
     const renderApp = () => {
       const root = document.getElementById('app');
-      root.innerHTML = headerHtml() + mainHtml() + footerHtml();
+      root.innerHTML = headerHtml() + (showMembers ? membersSectionHtml() : '') + mainHtml() + footerHtml();
       lucide.createIcons();
     };
 
@@ -387,6 +415,17 @@
     };
 
     // ===== 繝輔か繝ｼ繝�蜃ｦ逅・=====
+    window.deleteUser = () => {
+      const input = document.getElementById('userInput');
+      const name = input ? input.value.trim() : '';
+      if(!name) return;
+      const users = getSavedUsers().filter(u => u !== name);
+      localStorage.setItem('users', JSON.stringify(users));
+      localStorage.removeItem(`tasks_${name}`);
+      if(currentUser === name) currentUser = null;
+      renderApp();
+    };
+
     document.addEventListener('submit', (e) => {
       if(e.target && e.target.id === 'userForm'){
         e.preventDefault();
