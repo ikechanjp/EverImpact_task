@@ -4,10 +4,172 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>【EverImpact】Member Progress Report</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neon: {
+              pink: '#FF3AF5',
+              blue: '#00E5FF',
+              purple: '#8E2EFF',
+              yellow: '#FFE922',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gradient-to-br from-neon-purple via-neon-pink to-neon-blue min-h-screen font-sans p-4 sm:p-6 lg:p-8 text-white selection:bg-neon-yellow/70">
+  <div class="max-w-5xl mx-auto" id="app"></div>
+
+  <script>
+    const getInitialProjectPlan = () => [
+      { id: 1, title: '花崎エり & ないとコンサルで方向性決定', duration: null, timeline: null, icon: 'target', subtasks: [], isOpen: true, completed: false },
+      { id: 2, title: '5W1H+USP', duration: '5日', timeline: null, icon: 'check-circle', subtasks: [], isOpen: true, completed: false },
+      { id: 3, title: '講師登録', duration: '1日', timeline: null, icon: 'check-circle', subtasks: [], isOpen: true, completed: false },
+      { id: 4, title: '目次構成作成 / 台本', duration: '10日', timeline: 'ここまで1ヶ月', icon: 'edit-3', isOpen: true, completed: false,
+        subtasks: [
+          { text: 'タイトルを決める', completed: false },
+          { text: 'コースの説明文作成', completed: false },
+          { text: '受講生は何を学ぶか？', completed: false },
+          { text: '要件・前提条件', completed: false },
+          { text: '想定する学習者', completed: false },
+          { text: 'プロモーション動画', completed: false },
+          { text: 'サムネイル作成', completed: false },
+        ] },
+      { id: 5, title: 'スライド作成・管理方法', duration: '10日', timeline: '2ヶ月目', icon: 'edit-3', subtasks: [], isOpen: true, completed: false },
+      { id: 6, title: '動画撮影', duration: '15日', timeline: '3ヶ月目', icon: 'film', subtasks: [], isOpen: true, completed: false },
+      { id: 7, title: '動画編集', duration: '15日', timeline: '4ヶ月目', icon: 'film', subtasks: [], isOpen: true, completed: false },
+      { id: 8, title: 'コース登録・カテゴリ', duration: '1日', timeline: '5ヶ月目以降', icon: 'upload-cloud', subtasks: [], isOpen: true, completed: false },
+      { id: 9, title: 'ローンチ', duration: null, timeline: null, icon: 'rocket', isOpen: true, completed: false,
+        subtasks: [
+          { type: 'クーポン', details: [ { name: '無料', duration: '5日'  }, { name: '最低価格', duration: '5日間' } ], icon: 'tag', completed: false },
+          { type: 'X広告', details: [], icon: 'megaphone', completed: false },
+        ] },
+    ];
+
+    let tasks = getInitialProjectPlan();
+    let currentUser = null;
+
+    const getSavedUsers = () => JSON.parse(localStorage.getItem('users') || '[]');
+    const saveUserIfNew = (name) => {
+      const users = getSavedUsers();
+      if (!users.includes(name)) {
+        users.push(name);
+        localStorage.setItem('users', JSON.stringify(users));
+      }
+    };
+    const saveState = () => {
+      if (!currentUser) return;
+      localStorage.setItem(`tasks_${currentUser}`, JSON.stringify(tasks));
+    };
+    const loadState = (name) => {
+      const data = localStorage.getItem(`tasks_${name}`);
+      tasks = data ? JSON.parse(data) : getInitialProjectPlan();
+    };
+
+    const renderApp = () => {
+      const root = document.getElementById('app');
+      root.innerHTML = headerHtml() + mainHtml() + footerHtml();
+      lucide.createIcons();
+    };
+
+    const headerHtml = () => `
+      <header class="mb-8 text-center">
+        <h1 class="text-4xl font-extrabold tracking-wide drop-shadow-lg">【EverImpact】Member Progress Report</h1>
+        ${userSectionHtml()}
+      </header>`;
+
+    const userSectionHtml = () => {
+      const users = getSavedUsers();
+      return `
+        <div class="mt-6 flex flex-col items-center gap-4">
+          ${currentUser ? `<p class="text-lg">ようこそ、<span class="font-bold underline decoration-neon-yellow cursor-pointer" onclick="changeUser()">${currentUser}</span> さん！</p>` : ''}
+          <form id="userForm" class="flex gap-2 flex-wrap justify-center">
+            <input id="userInput" type="text" placeholder="あなたの名前" class="px-4 py-2 rounded-md bg-white/20 backdrop-blur placeholder-white/70 text-white focus:outline-none"/>
+            <button class="px-4 py-2 rounded-md bg-neon-yellow text-black font-bold hover:bg-white/80 transition">スタート</button>
+          </form>
+          ${users.length ? `<div class="flex flex-wrap gap-2 justify-center">${users.map(u => `<span class="px-3 py-1 bg-white/20 rounded-full cursor-pointer hover:bg-white/40 transition text-sm" onclick="selectUser('${u}')">${u}</span>`).join('')}</div>` : ''}
+        </div>`;
+    };
+
+    const mainHtml = () => `<main id="tasksArea">${tasks.map(taskCardHtml).join('')}</main>`;
+
+    const footerHtml = () => `<footer class="text-center mt-10 text-xs text-white/70">&copy; ${new Date().getFullYear()} プログレスレポート</footer>`;
+
+    const taskCardHtml = (task) => `
+      <div class="bg-white/80 text-gray-900 rounded-xl shadow-lg mb-4 transition-all duration-300 ${task.completed ? 'opacity-60' : ''}">
+        <div class="p-4 md:p-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center flex-grow">
+              ${checkboxHtml(task.id, null, task.completed)}
+              <i data-lucide="${task.icon}" class="mr-4 ${iconColor(task.icon)}"></i>
+              <h3 class="text-lg md:text-xl font-semibold ${task.completed ? 'line-through' : ''} text-gray-900">${task.id}. ${task.title}</h3>
+            </div>
+            <div class="flex items-center space-x-4 flex-shrink-0">
+              ${task.duration ? durationHtml(task.duration) : ''}
+              ${task.timeline ? timelineBadgeHtml(task.timeline, true) : ''}
+              ${task.subtasks.length ? toggleBtnHtml(task.id, task.isOpen) : ''}
+            </div>
+          </div>
+          ${task.timeline ? timelineBadgeHtml(task.timeline, false) : ''}
+        </div>
+        ${task.isOpen && task.subtasks.length ? subtasksHtml(task) : ''}
+      </div>`;
+
+    const checkboxHtml = (taskId, subIdx, checked) => `<div class="w-6 h-6 flex-shrink-0 mr-4 rounded-md border-2 flex items-center justify-center cursor-pointer transition ${checked ? 'bg-neon-yellow border-neon-yellow' : 'bg-white/20 border-white/40'}" onclick="toggleComplete(${taskId}, ${subIdx !== null ? subIdx : 'null'})">${checked ? '<i data-lucide="check" class="text-black" width="16" height="16"></i>' : ''}</div>`;
+    const toggleBtnHtml = (taskId, isOpen) => `<button onclick="toggleOpen(${taskId})" class="text-white/70 hover:text-white"><i data-lucide="${isOpen ? 'chevron-up' : 'chevron-down'}"></i></button>`;
+    const durationHtml = (d) => `<div class="flex items-center text-sm text-gray-700"><i data-lucide="clock" class="mr-1" width="16" height="16"></i><span>${d}</span></div>`;
+    const timelineBadgeHtml = (t, desktop) => {
+      const base = 'text-xs font-semibold px-2.5 py-0.5 rounded-full bg-neon-yellow text-black';
+      return desktop ? `<div class="hidden md:flex items-center ${base}"><i data-lucide="calendar" class="mr-1.5" width="14" height="14"></i>${t}</div>` : `<div class="md:hidden flex items-center ${base} mt-3 w-fit ml-10"><i data-lucide="calendar" class="mr-1.5" width="14" height="14"></i>${t}</div>`;
+    };
+    const subtasksHtml = (task) => `
+      <div class="px-6 pb-6 pt-2 bg-white/60 border-t border-white/30">
+        <h4 class="text-md font-semibold mb-3 ml-10">詳細タスク:</h4>
+        <ul class="space-y-3">
+          ${task.subtasks.map((sub, idx) => subtaskItemHtml(task.id, idx, sub)).join('')}
+        </ul>
+      </div>`;
+    const subtaskItemHtml = (taskId, idx, sub) => {
+      const opacity = sub.completed ? 'opacity-60' : '';
+      if (sub.text) {
+        return `<li class="flex items-start ${opacity}">${checkboxHtml(taskId, idx, sub.completed)}<span class="${sub.completed ? 'line-through' : ''}">${sub.text}</span></li>`;
+      }
+      return `<li class="flex items-start ${opacity}">${checkboxHtml(taskId, idx, sub.completed)}<div class="w-full"><div class="flex items-center font-medium ${sub.completed ? 'line-through' : ''}"><i data-lucide="${sub.icon}" width="20" height="20" class="text-neon-yellow"></i><span class="ml-2">${sub.type}</span></div>${sub.details && sub.details.length ? `<div class="pl-8 mt-2 space-y-1 text-sm">${sub.details.map(d => `<div class="flex justify-between"><span>${d.name}</span><span class"font-mono bg-white/20 px-2 py-0.5 rounded">${d.duration}</span></div>`).join('')}</div>` : ''}</div></li>`;
+    };
+    const iconColor = (icon) => ({ target:'text-neon-purple','check-circle':'text-neon-blue','edit-3':'text-neon-pink',film:'text-neon-yellow','upload-cloud':'text-neon-blue',rocket:'text-neon-purple'}[icon] || 'text-white');
+
+    window.toggleOpen = (taskId) => { tasks = tasks.map(t=>t.id===taskId?{...t,isOpen:!t.isOpen}:t); saveState(); renderApp(); };
+    window.toggleComplete = (taskId, subIdx) => {
+      const newTasks = JSON.parse(JSON.stringify(tasks));
+      const task = newTasks.find(t=>t.id===taskId);
+      if(!task)return;
+      if(subIdx!==null){ task.subtasks[subIdx].completed=!task.subtasks[subIdx].completed; task.completed=task.subtasks.every(st=>st.completed); }
+      else { task.completed=!task.completed; task.subtasks.forEach(st=>st.completed=task.completed);} tasks=newTasks; saveState(); renderApp(); };
+
+    window.selectUser = (name)=>{ currentUser=name; loadState(name); renderApp(); };
+    window.changeUser = ()=>{ currentUser=null; renderApp(); };
+
+    document.addEventListener('submit',e=>{ if(e.target&&e.target.id==='userForm'){ e.preventDefault(); const name=document.getElementById('userInput').value.trim(); if(!name)return; currentUser=name; saveUserIfNew(name); loadState(name); renderApp(); }});
+
+    renderApp();
+  </script>
+</body>
+</html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>縲職verImpact縲閃ember Progress Report</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Tailwind のカスタムチE�EチE E近未来ポップな色合い
+    // Tailwind 縺ｮ繧ｫ繧ｹ繧ｿ繝�繝・・繝・窶・霑第悴譚･繝昴ャ繝励↑濶ｲ蜷医＞
     tailwind.config = {
       theme: {
         extend: {
@@ -30,37 +192,37 @@
   <div class="max-w-5xl mx-auto" id="app"></div>
 
   <script>
-    // ===== チE�Eタ =====
+    // ===== 繝・・繧ｿ =====
     const getInitialProjectPlan = () => [
-      { id: 1, title: '花崎エめE& なぁE��コンサルで方向性決宁E, duration: null, timeline: null, icon: 'target', subtasks: [], isOpen: true, completed: false },
-      { id: 2, title: '5W1H+USP', duration: '5日', timeline: null, icon: 'check-circle', subtasks: [], isOpen: true, completed: false },
-      { id: 3, title: '講師登録', duration: '1日', timeline: null, icon: 'check-circle', subtasks: [], isOpen: true, completed: false },
-      { id: 4, title: '目次構�E作�E / 台本', duration: '10日', timeline: 'ここまで1ヶ朁E, icon: 'edit-3', isOpen: true, completed: false,
+      { id: 1, title: '闃ｱ蟠弱お繧・& 縺ｪ縺・→繧ｳ繝ｳ繧ｵ繝ｫ縺ｧ譁ｹ蜷第ｧ豎ｺ螳・, duration: null, timeline: null, icon: 'target', subtasks: [], isOpen: true, completed: false },
+      { id: 2, title: '5W1H+USP', duration: '5譌･', timeline: null, icon: 'check-circle', subtasks: [], isOpen: true, completed: false },
+      { id: 3, title: '隰帛ｸｫ逋ｻ骭ｲ', duration: '1譌･', timeline: null, icon: 'check-circle', subtasks: [], isOpen: true, completed: false },
+      { id: 4, title: '逶ｮ谺｡讒区・菴懈・ / 蜿ｰ譛ｬ', duration: '10譌･', timeline: '縺薙％縺ｾ縺ｧ1繝ｶ譛・, icon: 'edit-3', isOpen: true, completed: false,
         subtasks: [
-          { text: 'タイトルを決める', completed: false },
-          { text: 'コースの説明文作�E', completed: false },
-          { text: '受講生は何を学ぶか！E, completed: false },
-          { text: '要件・前提条件', completed: false },
-          { text: '想定する学習老E, completed: false },
-          { text: 'プロモーション動画', completed: false },
-          { text: 'サムネイル作�E', completed: false },
+          { text: '繧ｿ繧､繝医Ν繧呈ｱｺ繧√ｋ', completed: false },
+          { text: '繧ｳ繝ｼ繧ｹ縺ｮ隱ｬ譏取枚菴懈・', completed: false },
+          { text: '蜿苓ｬ帷函縺ｯ菴輔ｒ蟄ｦ縺ｶ縺具ｼ・, completed: false },
+          { text: '隕∽ｻｶ繝ｻ蜑肴署譚｡莉ｶ', completed: false },
+          { text: '諠ｳ螳壹☆繧句ｭｦ鄙定・, completed: false },
+          { text: '繝励Ο繝｢繝ｼ繧ｷ繝ｧ繝ｳ蜍慕判', completed: false },
+          { text: '繧ｵ繝�繝阪う繝ｫ菴懈・', completed: false },
         ] },
-      { id: 5, title: 'スライド作�E・管琁E��況E, duration: '10日', timeline: '2ヶ月目', icon: 'edit-3', subtasks: [], isOpen: true, completed: false },
-      { id: 6, title: '動画撮影', duration: '15日', timeline: '3ヶ月目', icon: 'film', subtasks: [], isOpen: true, completed: false },
-      { id: 7, title: '動画編雁E, duration: '15日', timeline: '4ヶ月目', icon: 'film', subtasks: [], isOpen: true, completed: false },
-      { id: 8, title: 'コース登録・カチE��リ', duration: '1日', timeline: '5ヶ月目以陁E, icon: 'upload-cloud', subtasks: [], isOpen: true, completed: false },
-      { id: 9, title: 'ローンチE, duration: null, timeline: null, icon: 'rocket', isOpen: true, completed: false,
+      { id: 5, title: '繧ｹ繝ｩ繧､繝我ｽ懈・繝ｻ邂｡逅・婿豕・, duration: '10譌･', timeline: '2繝ｶ譛育岼', icon: 'edit-3', subtasks: [], isOpen: true, completed: false },
+      { id: 6, title: '蜍慕判謦ｮ蠖ｱ', duration: '15譌･', timeline: '3繝ｶ譛育岼', icon: 'film', subtasks: [], isOpen: true, completed: false },
+      { id: 7, title: '蜍慕判邱ｨ髮・, duration: '15譌･', timeline: '4繝ｶ譛育岼', icon: 'film', subtasks: [], isOpen: true, completed: false },
+      { id: 8, title: '繧ｳ繝ｼ繧ｹ逋ｻ骭ｲ繝ｻ繧ｫ繝・ざ繝ｪ', duration: '1譌･', timeline: '5繝ｶ譛育岼莉･髯・, icon: 'upload-cloud', subtasks: [], isOpen: true, completed: false },
+      { id: 9, title: '繝ｭ繝ｼ繝ｳ繝・, duration: null, timeline: null, icon: 'rocket', isOpen: true, completed: false,
         subtasks: [
-          { type: 'クーポン', details: [ { name: '無斁E, duration: '5日'  }, { name: '最低価格', duration: '5日閁E } ], icon: 'tag', completed: false },
-          { type: 'X庁E��', details: [], icon: 'megaphone', completed: false },
+          { type: '繧ｯ繝ｼ繝昴Φ', details: [ { name: '辟｡譁・, duration: '5譌･'  }, { name: '譛菴惹ｾ｡譬ｼ', duration: '5譌･髢・ } ], icon: 'tag', completed: false },
+          { type: 'X蠎・相', details: [], icon: 'megaphone', completed: false },
         ] },
     ];
 
-    // ===== 状慁E=====
+    // ===== 迥ｶ諷・=====
     let tasks = getInitialProjectPlan();
     let currentUser = null;
 
-    // ===== ユーザー一覧の取征E=====
+    // ===== 繝ｦ繝ｼ繧ｶ繝ｼ荳隕ｧ縺ｮ蜿門ｾ・=====
     const getSavedUsers = () => {
       return JSON.parse(localStorage.getItem('users') || '[]');
     };
@@ -72,7 +234,7 @@
       }
     };
 
-    // ====== 保存�E読込 ======
+    // ====== 菫晏ｭ倥・隱ｭ霎ｼ ======
     const saveState = () => {
       if (!currentUser) return;
       localStorage.setItem(`tasks_${currentUser}`, JSON.stringify(tasks));
@@ -92,7 +254,7 @@
     const headerHtml = () => {
       return `
         <header class="mb-8 text-center">
-          <h1 class="text-4xl font-extrabold tracking-wide drop-shadow-lg">【EverImpact】Member Progress Report</h1>
+          <h1 class="text-4xl font-extrabold tracking-wide drop-shadow-lg">縲職verImpact縲閃ember Progress Report</h1>
           ${userSectionHtml()}
         </header>`;
     };
@@ -101,10 +263,10 @@
       const users = getSavedUsers();
       return `
         <div class="mt-6 flex flex-col items-center gap-4">
-          ${currentUser ? `<p class="text-lg">ようこそ、Espan class="font-bold underline decoration-neon-yellow cursor-pointer" onclick="changeUser()">${currentUser}</span> さん�E�E/p>` : ''}
+          ${currentUser ? `<p class="text-lg">繧医≧縺薙◎縲・span class="font-bold underline decoration-neon-yellow cursor-pointer" onclick="changeUser()">${currentUser}</span> 縺輔ｓ・・/p>` : ''}
           <form id="userForm" class="flex gap-2 flex-wrap justify-center">
-            <input id="userInput" type="text" placeholder="あなた�E名前" class="px-4 py-2 rounded-md bg-white/20 backdrop-blur placeholder-white/70 text-white focus:outline-none"/>
-            <button class="px-4 py-2 rounded-md bg-neon-yellow text-black font-bold hover:bg-white/80 transition">スターチE/button>
+            <input id="userInput" type="text" placeholder="縺ゅ↑縺溘・蜷榊燕" class="px-4 py-2 rounded-md bg-white/20 backdrop-blur placeholder-white/70 text-white focus:outline-none"/>
+            <button class="px-4 py-2 rounded-md bg-neon-yellow text-black font-bold hover:bg-white/80 transition">繧ｹ繧ｿ繝ｼ繝・/button>
           </form>
           ${users.length ? `<div class="flex flex-wrap gap-2 justify-center">${users.map(uChip).join('')}</div>` : ''}
         </div>`;
@@ -121,9 +283,9 @@
 
     const footerHtml = () => `
       <footer class="text-center mt-10 text-xs text-white/70">
-        &copy; ${new Date().getFullYear()} プロジェクト管琁E��チE��ュボ�EチE      </footer>`;
+        &copy; ${new Date().getFullYear()} 繝励Ο繧ｸ繧ｧ繧ｯ繝育ｮ｡逅・ム繝・す繝･繝懊・繝・      </footer>`;
 
-    // ===== タスクカーチE=====
+    // ===== 繧ｿ繧ｹ繧ｯ繧ｫ繝ｼ繝・=====
     const taskCardHtml = (task) => {
       return `
         <div class="bg-white/60 text-gray-900 rounded-xl shadow-lg mb-4 transition-all duration-300 ${task.completed ? 'opacity-60' : ''}">
@@ -163,7 +325,7 @@
     const subtasksHtml = (task) => {
       return `
         <div class="px-6 pb-6 pt-2 bg-white/60 border-t border-white/30">
-          <h4 class="text-md font-semibold mb-3 ml-10">詳細タスク:</h4>
+          <h4 class="text-md font-semibold mb-3 ml-10">隧ｳ邏ｰ繧ｿ繧ｹ繧ｯ:</h4>
           <ul class="space-y-3">
             ${task.subtasks.map((sub, idx) => subtaskItemHtml(task.id, idx, sub)).join('')}
           </ul>
@@ -190,7 +352,7 @@
       }
     };
 
-    // ===== クリチE��ハンドラ =====
+    // ===== 繧ｯ繝ｪ繝・け繝上Φ繝峨Λ =====
     window.toggleOpen = (taskId) => {
       tasks = tasks.map(t => t.id === taskId ? { ...t, isOpen: !t.isOpen } : t);
       saveState();
@@ -224,7 +386,7 @@
       renderApp();
     };
 
-    // ===== フォーム処琁E=====
+    // ===== 繝輔か繝ｼ繝�蜃ｦ逅・=====
     document.addEventListener('submit', (e) => {
       if(e.target && e.target.id === 'userForm'){
         e.preventDefault();
@@ -238,7 +400,7 @@
       }
     });
 
-    // ===== 初期描画 =====
+    // ===== 蛻晄悄謠冗判 =====
     renderApp();
   </script>
 </body>
