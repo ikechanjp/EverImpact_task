@@ -3,319 +3,243 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>プロジェクト計画ダッシュボード</title>
+  <title>【EverImpact】Member Progress Report</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tailwind のカスタムチE�EチE E近未来ポップな色合い
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neon: {
+              pink: '#FF3AF5',
+              blue: '#00E5FF',
+              purple: '#8E2EFF',
+              yellow: '#FFE922',
+            },
+          },
+        },
+      },
+    };
+  </script>
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-gray-100 min-h-screen font-sans p-4 sm:p-6 lg:p-8">
-  <div class="max-w-4xl mx-auto" id="app">
-    <!-- コンテンツは JavaScript で生成 -->
-  </div>
+<body class="bg-gradient-to-br from-neon-purple via-neon-pink to-neon-blue min-h-screen font-sans p-4 sm:p-6 lg:p-8 text-white selection:bg-neon-yellow/70">
+  <div class="max-w-5xl mx-auto" id="app"></div>
 
   <script>
-    // ===== プロジェクト計画データ =====
+    // ===== チE�Eタ =====
     const getInitialProjectPlan = () => [
-      {
-        id: 1,
-        title: '花崎エり & ないとコンサルで方向性決定',
-        duration: null,
-        timeline: null,
-        icon: 'target',
-        subtasks: [],
-        isOpen: true,
-        completed: false,
-      },
-      {
-        id: 2,
-        title: '5W1H+USP',
-        duration: '5日',
-        timeline: null,
-        icon: 'check-circle',
-        subtasks: [],
-        isOpen: true,
-        completed: false,
-      },
-      {
-        id: 3,
-        title: '講師登録',
-        duration: '1日',
-        timeline: null,
-        icon: 'check-circle',
-        subtasks: [],
-        isOpen: true,
-        completed: false,
-      },
-      {
-        id: 4,
-        title: '目次構成作成 / 台本',
-        duration: '10日',
-        timeline: 'ここまで1ヶ月',
-        icon: 'edit-3',
+      { id: 1, title: '花崎エめE& なぁE��コンサルで方向性決宁E, duration: null, timeline: null, icon: 'target', subtasks: [], isOpen: true, completed: false },
+      { id: 2, title: '5W1H+USP', duration: '5日', timeline: null, icon: 'check-circle', subtasks: [], isOpen: true, completed: false },
+      { id: 3, title: '講師登録', duration: '1日', timeline: null, icon: 'check-circle', subtasks: [], isOpen: true, completed: false },
+      { id: 4, title: '目次構�E作�E / 台本', duration: '10日', timeline: 'ここまで1ヶ朁E, icon: 'edit-3', isOpen: true, completed: false,
         subtasks: [
           { text: 'タイトルを決める', completed: false },
-          { text: 'コースの説明文作成', completed: false },
-          { text: '受講生は何を学ぶか？', completed: false },
+          { text: 'コースの説明文作�E', completed: false },
+          { text: '受講生は何を学ぶか！E, completed: false },
           { text: '要件・前提条件', completed: false },
-          { text: '想定する学習者', completed: false },
+          { text: '想定する学習老E, completed: false },
           { text: 'プロモーション動画', completed: false },
-          { text: 'サムネイル作成', completed: false },
-        ],
-        isOpen: true,
-        completed: false,
-      },
-      {
-        id: 5,
-        title: 'スライド作成・管理方法',
-        duration: '10日',
-        timeline: '2ヶ月目',
-        icon: 'edit-3',
-        subtasks: [],
-        isOpen: true,
-        completed: false,
-      },
-      {
-        id: 6,
-        title: '動画撮影',
-        duration: '15日',
-        timeline: '3ヶ月目',
-        icon: 'film',
-        subtasks: [],
-        isOpen: true,
-        completed: false,
-      },
-      {
-        id: 7,
-        title: '動画編集',
-        duration: '15日',
-        timeline: '4ヶ月目',
-        icon: 'film',
-        subtasks: [],
-        isOpen: true,
-        completed: false,
-      },
-      {
-        id: 8,
-        title: 'コース登録・カテゴリ',
-        duration: '1日',
-        timeline: '5ヶ月目以降',
-        icon: 'upload-cloud',
-        subtasks: [],
-        isOpen: true,
-        completed: false,
-      },
-      {
-        id: 9,
-        title: 'ローンチ',
-        duration: null,
-        timeline: null,
-        icon: 'rocket',
+          { text: 'サムネイル作�E', completed: false },
+        ] },
+      { id: 5, title: 'スライド作�E・管琁E��況E, duration: '10日', timeline: '2ヶ月目', icon: 'edit-3', subtasks: [], isOpen: true, completed: false },
+      { id: 6, title: '動画撮影', duration: '15日', timeline: '3ヶ月目', icon: 'film', subtasks: [], isOpen: true, completed: false },
+      { id: 7, title: '動画編雁E, duration: '15日', timeline: '4ヶ月目', icon: 'film', subtasks: [], isOpen: true, completed: false },
+      { id: 8, title: 'コース登録・カチE��リ', duration: '1日', timeline: '5ヶ月目以陁E, icon: 'upload-cloud', subtasks: [], isOpen: true, completed: false },
+      { id: 9, title: 'ローンチE, duration: null, timeline: null, icon: 'rocket', isOpen: true, completed: false,
         subtasks: [
-          {
-            type: 'クーポン',
-            details: [
-              { name: '無料', duration: '5日' },
-              { name: '最低価格', duration: '5日間' },
-            ],
-            icon: 'tag',
-            completed: false,
-          },
-          {
-            type: 'X広告',
-            details: [],
-            icon: 'megaphone',
-            completed: false,
-          },
-        ],
-        isOpen: true,
-        completed: false,
-      },
+          { type: 'クーポン', details: [ { name: '無斁E, duration: '5日'  }, { name: '最低価格', duration: '5日閁E } ], icon: 'tag', completed: false },
+          { type: 'X庁E��', details: [], icon: 'megaphone', completed: false },
+        ] },
     ];
 
-    // ====== 状態 ======
+    // ===== 状慁E=====
     let tasks = getInitialProjectPlan();
+    let currentUser = null;
 
-    // ====== 関数: DOM 更新 ======
-    const renderTasks = () => {
-      const container = document.getElementById('app');
+    // ===== ユーザー一覧の取征E=====
+    const getSavedUsers = () => {
+      return JSON.parse(localStorage.getItem('users') || '[]');
+    };
+    const saveUserIfNew = (name) => {
+      const users = getSavedUsers();
+      if (!users.includes(name)) {
+        users.push(name);
+        localStorage.setItem('users', JSON.stringify(users));
+      }
+    };
 
-      const header = `
-        <header class="mb-8 text-center">
-          <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">プロジェクト計画</h1>
-          <p class="text-gray-600">オンラインコース制作タイムライン</p>
-        </header>
-      `;
+    // ====== 保存�E読込 ======
+    const saveState = () => {
+      if (!currentUser) return;
+      localStorage.setItem(`tasks_${currentUser}`, JSON.stringify(tasks));
+    };
+    const loadState = (name) => {
+      const data = localStorage.getItem(`tasks_${name}`);
+      tasks = data ? JSON.parse(data) : getInitialProjectPlan();
+    };
 
-      const tasksHtml = tasks
-        .map(
-          (task) => `
-          <div class="bg-white rounded-xl shadow-md overflow-hidden mb-4 transition-all duration-300 ${
-            task.completed ? 'opacity-60' : 'opacity-100'
-          }">
-            <div class="p-4 md:p-6">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center flex-grow">
-                  ${customCheckboxHtml(task.id, null, task.completed)}
-                  <i data-lucide="${task.icon}" class="mr-4 ${iconColor(task.icon)}"></i>
-                  <h3 class="text-lg md:text-xl font-semibold text-gray-800 transition-all duration-300 ${
-                    task.completed ? 'line-through' : ''
-                  }">
-                    ${task.id}. ${task.title}
-                  </h3>
-                </div>
-                <div class="flex items-center space-x-4 flex-shrink-0">
-                  ${task.duration ? durationHtml(task.duration) : ''}
-                  ${task.timeline ? timelineHtml(task.timeline, true) : ''}
-                  ${
-                    task.subtasks.length > 0
-                      ? `<button onclick="toggleOpen(${task.id})" class="text-gray-500 hover:text-gray-700">
-                          <i data-lucide="${task.isOpen ? 'chevron-up' : 'chevron-down'}"></i>
-                        </button>`
-                      : ''
-                  }
-                </div>
-              </div>
-              ${task.timeline ? timelineHtml(task.timeline, false) : ''}
-            </div>
-            ${task.isOpen && task.subtasks.length > 0 ? subtasksHtml(task) : ''}
-          </div>
-        `
-        )
-        .join('');
-
-      const footer = `
-        <footer class="text-center mt-8 text-sm text-gray-500">
-          <p>&copy; ${new Date().getFullYear()} プロジェクト管理ダッシュボード</p>
-        </footer>`;
-
-      container.innerHTML = header + tasksHtml + footer;
+    // ===== DOM =====
+    const renderApp = () => {
+      const root = document.getElementById('app');
+      root.innerHTML = headerHtml() + mainHtml() + footerHtml();
       lucide.createIcons();
     };
 
-    // ====== ヘルパー HTML ======
-    const customCheckboxHtml = (taskId, subIdx, checked) => {
+    const headerHtml = () => {
       return `
-        <div
-          class="w-6 h-6 flex-shrink-0 mr-4 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all duration-200 ${
-            checked ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-gray-300'
-          }"
-          onclick="toggleComplete(${taskId}, ${subIdx !== null ? subIdx : 'null'})"
-        >
-          ${checked ? '<i data-lucide="check-circle" class="text-white"></i>' : ''}
-        </div>
-      `;
+        <header class="mb-8 text-center">
+          <h1 class="text-4xl font-extrabold tracking-wide drop-shadow-lg">【EverImpact】Member Progress Report</h1>
+          ${userSectionHtml()}
+        </header>`;
     };
 
-    const durationHtml = (duration) => {
+    const userSectionHtml = () => {
+      const users = getSavedUsers();
       return `
-        <div class="flex items-center text-sm text-gray-500">
-          <i data-lucide="clock" class="mr-1" width="16" height="16"></i>
-          <span>${duration}</span>
+        <div class="mt-6 flex flex-col items-center gap-4">
+          ${currentUser ? `<p class="text-lg">ようこそ、Espan class="font-bold underline decoration-neon-yellow cursor-pointer" onclick="changeUser()">${currentUser}</span> さん�E�E/p>` : ''}
+          <form id="userForm" class="flex gap-2 flex-wrap justify-center">
+            <input id="userInput" type="text" placeholder="あなた�E名前" class="px-4 py-2 rounded-md bg-white/20 backdrop-blur placeholder-white/70 text-white focus:outline-none"/>
+            <button class="px-4 py-2 rounded-md bg-neon-yellow text-black font-bold hover:bg-white/80 transition">スターチE/button>
+          </form>
+          ${users.length ? `<div class="flex flex-wrap gap-2 justify-center">${users.map(uChip).join('')}</div>` : ''}
         </div>`;
     };
 
-    const timelineHtml = (timeline, desktop) => {
-      if (desktop) {
-        return `
-          <div class="hidden md:flex items-center bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-            <i data-lucide="calendar" class="mr-1.5" width="14" height="14"></i>
-            ${timeline}
-          </div>`;
-      } else {
-        return `
-          <div class="md:hidden flex items-center bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full mt-3 w-fit ml-10">
-            <i data-lucide="calendar" class="mr-1.5" width="14" height="14"></i>
-            ${timeline}
-          </div>`;
-      }
+    const uChip = (name) => {
+      return `<span class="px-3 py-1 bg-white/20 rounded-full cursor-pointer hover:bg-white/40 transition text-sm" onclick="selectUser('${name}')">${name}</span>`;
+    };
+
+    const mainHtml = () => {
+      return `
+        <main id="tasksArea">${tasks.map(taskCardHtml).join('')}</main>`;
+    };
+
+    const footerHtml = () => `
+      <footer class="text-center mt-10 text-xs text-white/70">
+        &copy; ${new Date().getFullYear()} プロジェクト管琁E��チE��ュボ�EチE      </footer>`;
+
+    // ===== タスクカーチE=====
+    const taskCardHtml = (task) => {
+      return `
+        <div class="bg-white/60 text-gray-900 rounded-xl shadow-lg mb-4 transition-all duration-300 ${task.completed ? 'opacity-60' : ''}">
+          <div class="p-4 md:p-6">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center flex-grow">
+                ${checkboxHtml(task.id, null, task.completed)}
+                <i data-lucide="${task.icon}" class="mr-4 ${iconColor(task.icon)}"></i>
+                <h3 class="text-lg md:text-xl font-semibold ${task.completed ? 'line-through' : ''} text-gray-900">${task.id}. ${task.title}</h3>
+              </div>
+              <div class="flex items-center space-x-4 flex-shrink-0">
+                ${task.duration ? durationHtml(task.duration) : ''}
+                ${task.timeline ? timelineBadgeHtml(task.timeline, true) : ''}
+                ${task.subtasks.length ? toggleBtnHtml(task.id, task.isOpen) : ''}
+              </div>
+            </div>
+            ${task.timeline ? timelineBadgeHtml(task.timeline, false) : ''}
+          </div>
+          ${task.isOpen && task.subtasks.length ? subtasksHtml(task) : ''}
+        </div>`;
+    };
+
+    const checkboxHtml = (taskId, subIdx, checked) => {
+      return `<div class="w-6 h-6 flex-shrink-0 mr-4 rounded-md border-2 flex items-center justify-center cursor-pointer transition ${checked ? 'bg-neon-yellow border-neon-yellow' : 'bg-white/20 border-white/40'}" onclick="toggleComplete(${taskId}, ${subIdx !== null ? subIdx : 'null'})">${checked ? '<i data-lucide="check" class="text-black" width="16" height="16"></i>' : ''}</div>`;
+    };
+
+    const toggleBtnHtml = (taskId, isOpen) => `<button onclick="toggleOpen(${taskId})" class="text-white/70 hover:text-white"><i data-lucide="${isOpen ? 'chevron-up' : 'chevron-down'}"></i></button>`;
+
+    const durationHtml = (d) => `<div class="flex items-center text-sm text-gray-700"><i data-lucide="clock" class="mr-1" width="16" height="16"></i><span>${d}</span></div>`;
+
+    const timelineBadgeHtml = (t, desktop) => {
+      const base = 'text-xs font-semibold px-2.5 py-0.5 rounded-full bg-neon-yellow text-black';
+      if (desktop) return `<div class="hidden md:flex items-center ${base}"><i data-lucide="calendar" class="mr-1.5" width="14" height="14"></i>${t}</div>`;
+      return `<div class="md:hidden flex items-center ${base} mt-3 w-fit ml-10"><i data-lucide="calendar" class="mr-1.5" width="14" height="14"></i>${t}</div>`;
     };
 
     const subtasksHtml = (task) => {
       return `
-        <div class="px-6 pb-6 pt-2 bg-gray-50 border-t border-gray-200">
-          <h4 class="text-md font-semibold text-gray-700 mb-3 ml-10">詳細タスク:</h4>
+        <div class="px-6 pb-6 pt-2 bg-white/60 border-t border-white/30">
+          <h4 class="text-md font-semibold mb-3 ml-10">詳細タスク:</h4>
           <ul class="space-y-3">
-            ${task.subtasks
-              .map((sub, idx) => {
-                const base = `class=\"flex items-start transition-all duration-300 ${
-                  sub.completed ? 'opacity-60' : ''
-                }\"`;
-                if (sub.text) {
-                  return `<li ${base}>${customCheckboxHtml(task.id, idx, sub.completed)}<span class="text-gray-600 ${
-                    sub.completed ? 'line-through' : ''
-                  }">${sub.text}</span></li>`;
-                } else {
-                  return `<li ${base}>${customCheckboxHtml(task.id, idx, sub.completed)}
-                    <div class="w-full">
-                      <div class="flex items-center font-medium text-gray-800 ${
-                        sub.completed ? 'line-through' : ''
-                      }">
-                        <i data-lucide="${sub.icon}" width="20" height="20" class="text-gray-500"></i>
-                        <span class="ml-2">${sub.type}</span>
-                      </div>
-                      ${
-                        sub.details && sub.details.length
-                          ? `<div class="pl-8 mt-2 space-y-1 text-sm text-gray-500">${sub.details
-                              .map(
-                                (d) => `<div class="flex justify-between"><span>${d.name}</span><span class="font-mono bg-gray-200 px-2 py-0.5 rounded">${d.duration}</span></div>`
-                              )
-                              .join('')}</div>`
-                          : ''
-                      }
-                    </div>
-                  </li>`;
-                }
-              })
-              .join('')}
+            ${task.subtasks.map((sub, idx) => subtaskItemHtml(task.id, idx, sub)).join('')}
           </ul>
-        </div>
-      `;
+        </div>`;
+    };
+
+    const subtaskItemHtml = (taskId, idx, sub) => {
+      const opacity = sub.completed ? 'opacity-60' : '';
+      if (sub.text) {
+        return `<li class="flex items-start ${opacity}">${checkboxHtml(taskId, idx, sub.completed)}<span class="${sub.completed ? 'line-through' : ''}">${sub.text}</span></li>`;
+      }
+      return `<li class="flex items-start ${opacity}">${checkboxHtml(taskId, idx, sub.completed)}<div class="w-full"><div class="flex items-center font-medium ${sub.completed ? 'line-through' : ''}"><i data-lucide="${sub.icon}" width="20" height="20" class="text-neon-yellow"></i><span class="ml-2">${sub.type}</span></div>${sub.details && sub.details.length ? `<div class="pl-8 mt-2 space-y-1 text-sm">${sub.details.map(d => `<div class="flex justify-between"><span>${d.name}</span><span class="font-mono bg-white/20 px-2 py-0.5 rounded">${d.duration}</span></div>`).join('')}</div>` : ''}</div></li>`;
     };
 
     const iconColor = (icon) => {
-      switch (icon) {
-        case 'target':
-          return 'text-purple-500';
-        case 'check-circle':
-          return 'text-blue-500';
-        case 'edit-3':
-          return 'text-orange-500';
-        case 'film':
-          return 'text-red-500';
-        case 'upload-cloud':
-          return 'text-green-500';
-        case 'rocket':
-          return 'text-teal-500';
-        default:
-          return 'text-gray-500';
+      switch(icon){
+        case 'target': return 'text-neon-purple';
+        case 'check-circle': return 'text-neon-blue';
+        case 'edit-3': return 'text-neon-pink';
+        case 'film': return 'text-neon-yellow';
+        case 'upload-cloud': return 'text-neon-blue';
+        case 'rocket': return 'text-neon-purple';
+        default: return 'text-white';
       }
     };
 
-    // ====== クリックハンドラ ======
+    // ===== クリチE��ハンドラ =====
     window.toggleOpen = (taskId) => {
-      tasks = tasks.map((t) => (t.id === taskId ? { ...t, isOpen: !t.isOpen } : t));
-      renderTasks();
+      tasks = tasks.map(t => t.id === taskId ? { ...t, isOpen: !t.isOpen } : t);
+      saveState();
+      renderApp();
     };
 
     window.toggleComplete = (taskId, subIdx) => {
       const newTasks = JSON.parse(JSON.stringify(tasks));
-      const task = newTasks.find((t) => t.id === taskId);
-      if (!task) return;
-
-      if (subIdx !== null) {
+      const task = newTasks.find(t => t.id === taskId);
+      if(!task) return;
+      if(subIdx !== null){
         task.subtasks[subIdx].completed = !task.subtasks[subIdx].completed;
-        task.completed = task.subtasks.every((st) => st.completed);
-      } else {
+        task.completed = task.subtasks.every(st => st.completed);
+      }else{
         task.completed = !task.completed;
-        task.subtasks.forEach((st) => (st.completed = task.completed));
+        task.subtasks.forEach(st => st.completed = task.completed);
       }
       tasks = newTasks;
-      renderTasks();
+      saveState();
+      renderApp();
     };
 
+    window.selectUser = (name) => {
+      currentUser = name;
+      loadState(name);
+      renderApp();
+    };
+
+    window.changeUser = () => {
+      currentUser = null;
+      renderApp();
+    };
+
+    // ===== フォーム処琁E=====
+    document.addEventListener('submit', (e) => {
+      if(e.target && e.target.id === 'userForm'){
+        e.preventDefault();
+        const input = document.getElementById('userInput');
+        const name = input.value.trim();
+        if(!name) return;
+        currentUser = name;
+        saveUserIfNew(name);
+        loadState(name);
+        renderApp();
+      }
+    });
+
     // ===== 初期描画 =====
-    renderTasks();
+    renderApp();
   </script>
 </body>
 </html>
