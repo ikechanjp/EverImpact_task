@@ -143,7 +143,7 @@
         ${task.isOpen && task.subtasks.length ? subtasksHtml(task) : ''}
       </div>`;
 
-    const checkboxHtml = (taskId, subIdx, checked) => `<div class="w-6 h-6 flex-shrink-0 mr-4 rounded-md border-2 flex items-center justify-center cursor-pointer transition ${checked ? 'bg-neon-yellow border-neon-yellow' : 'bg-white/10 border-white/30'}" onclick="toggleComplete(${taskId}, ${subIdx !== null ? subIdx : 'null'})">${checked ? '<i data-lucide="check" class="text-black" width="16" height="16"></i>' : ''}</div>`;
+    const checkboxHtml = (taskId, subIdx, checked) => `<div class="w-6 h-6 flex-shrink-0 mr-4 rounded-md border-2 flex items-center justify-center cursor-pointer transition ${checked ? 'bg-neon-yellow border-neon-yellow' : 'bg-white/10 border-white/70'}" onclick="toggleComplete(${taskId}, ${subIdx !== null ? subIdx : 'null'})">${checked ? '<i data-lucide="check" class="text-black" width="16" height="16"></i>' : ''}</div>`;
     const toggleBtnHtml = (taskId, isOpen) => `<button onclick="toggleOpen(${taskId})" class="text-white/70 hover:text-white"><i data-lucide="${isOpen ? 'chevron-up' : 'chevron-down'}"></i></button>`;
     const durationHtml = (d) => `<div class="flex items-center text-sm text-gray-700"><i data-lucide="clock" class="mr-1" width="16" height="16"></i><span>${d}</span></div>`;
     const timelineBadgeHtml = (t, desktop) => {
