@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>進捗ダッシュボード</h2>
+        <p class="lead">メンバーの進捗状況を一覧表示</p>
+    </div>
+</div>
+
+<div class="row">
+    {% for data in progress_data %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ data.user.username }}</h5>
+                <div class="progress mb-3">
+                    <div class="progress-bar" role="progressbar" 
+                         style="width: {{ data.progress }}%" 
+                         aria-valuenow="{{ data.progress }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                        {{ data.progress }}%
+                    </div>
+                </div>
+                <p class="mb-1"><small>タスク完了数: {{ data.completed_tasks }}/{{ data.total_tasks }}</small></p>
+                {% if data.user.checklists %}
+                <a href="{{ url_for('view_checklist', checklist_id=data.user.checklists[0].id) }}" class="btn btn-outline-primary btn-sm">詳細を見る</a>
+                {% else %}
+                <span class="btn btn-outline-secondary btn-sm disabled">チェックリストなし</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
