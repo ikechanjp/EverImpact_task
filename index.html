@@ -97,11 +97,11 @@
         <div class="mt-6 flex flex-col items-center gap-4">
           ${currentUser ? `<p class="text-lg">ようこそ、<span class="font-bold underline decoration-neon-yellow cursor-pointer" onclick="changeUser()">${currentUser}</span> さん！</p>` : ''}
           <form id="userForm" class="flex gap-2 flex-wrap justify-center">
-            <input id="userInput" type="text" placeholder="あなたの名前" class="px-4 py-2 rounded-md bg-white/20 backdrop-blur placeholder-white/70 text-white focus:outline-none"/>
+            <input id="userInput" type="text" placeholder="あなたの名前" class="px-4 py-2 rounded-md bg-white/10 backdrop-blur placeholder-white/70 text-white focus:outline-none"/>
             <button class="px-4 py-2 rounded-md bg-neon-yellow text-black font-bold hover:bg-white/80 transition">スタート</button>
             <button type="button" onclick="deleteUser()" class="px-4 py-2 rounded-md bg-red-500 hover:bg-red-700 transition text-sm">削除</button>
           </form>
-          ${users.length ? `<div class=\"flex flex-wrap gap-2 justify-center\">${users.map(u => `<span class=\"px-3 py-1 bg-white/20 rounded-full cursor-pointer hover:bg-white/40 transition text-sm\" onclick=\"selectUser('${u}')\">${u}</span>`).join('')}</div>` : ''}
+          ${users.length ? `<div class=\"flex flex-wrap gap-2 justify-center\">${users.map(u => `<span class=\"px-3 py-1 bg-white/10 rounded-full cursor-pointer hover:bg-white/30 transition text-sm\" onclick=\"selectUser('${u}')\">${u}</span>`).join('')}</div>` : ''}
         </div>`;
     };
 
@@ -116,7 +116,7 @@
         const comp = ts.filter(t=>t.completed).length;
         return Math.round(comp/total*100);
       })() })).sort((a,b)=>b.percent-a.percent);
-      return `<section class=\"w-full max-w-md mx-auto mt-10 mb-10 space-y-4\">${list.map(item=>`<div class=\"flex items-center space-x-3\"><span class=\"w-24 truncate\">${item.name}</span><div class=\"flex-1 bg-white/20 rounded-full h-4\"><div class=\"bg-neon-yellow h-4 rounded-full\" style=\"width:${item.percent}%\"></div></div><span class=\"w-12 text-right\">${item.percent}%</span></div>`).join('')}</section>`;
+      return `<section class=\"w-full max-w-md mx-auto mt-10 mb-10 space-y-4\">${list.map(item=>`<div class=\"flex items-center space-x-3\"><span class=\"w-24 truncate\">${item.name}</span><div class=\"flex-1 bg-white/10 rounded-full h-4\"><div class=\"bg-neon-yellow h-4 rounded-full\" style=\"width:${item.percent}%\"></div></div><span class=\"w-12 text-right\">${item.percent}%</span></div>`).join('')}</section>`;
     };
 
     const mainHtml = () => `<main id=\"tasksArea\">${tasks.map(taskCardHtml).join('')}</main>`;
@@ -124,7 +124,7 @@
     const footerHtml = () => `<footer class="text-center mt-10 text-xs text-white/70">&copy; ${new Date().getFullYear()} プログレスレポート</footer>`;
 
     const taskCardHtml = (task) => `
-      <div class="bg-white/80 text-gray-900 rounded-xl shadow-lg mb-4 transition-all duration-300 ${task.completed ? 'opacity-60' : ''}">
+      <div class="bg-white/40 text-gray-900 rounded-xl shadow-lg mb-4 transition-all duration-300 ${task.completed ? 'opacity-60' : ''}">
         <div class="p-4 md:p-6">
           <div class="flex items-center justify-between">
             <div class="flex items-center flex-grow">
@@ -143,7 +143,7 @@
         ${task.isOpen && task.subtasks.length ? subtasksHtml(task) : ''}
       </div>`;
 
-    const checkboxHtml = (taskId, subIdx, checked) => `<div class="w-6 h-6 flex-shrink-0 mr-4 rounded-md border-2 flex items-center justify-center cursor-pointer transition ${checked ? 'bg-neon-yellow border-neon-yellow' : 'bg-white/20 border-white/40'}" onclick="toggleComplete(${taskId}, ${subIdx !== null ? subIdx : 'null'})">${checked ? '<i data-lucide="check" class="text-black" width="16" height="16"></i>' : ''}</div>`;
+    const checkboxHtml = (taskId, subIdx, checked) => `<div class="w-6 h-6 flex-shrink-0 mr-4 rounded-md border-2 flex items-center justify-center cursor-pointer transition ${checked ? 'bg-neon-yellow border-neon-yellow' : 'bg-white/10 border-white/30'}" onclick="toggleComplete(${taskId}, ${subIdx !== null ? subIdx : 'null'})">${checked ? '<i data-lucide="check" class="text-black" width="16" height="16"></i>' : ''}</div>`;
     const toggleBtnHtml = (taskId, isOpen) => `<button onclick="toggleOpen(${taskId})" class="text-white/70 hover:text-white"><i data-lucide="${isOpen ? 'chevron-up' : 'chevron-down'}"></i></button>`;
     const durationHtml = (d) => `<div class="flex items-center text-sm text-gray-700"><i data-lucide="clock" class="mr-1" width="16" height="16"></i><span>${d}</span></div>`;
     const timelineBadgeHtml = (t, desktop) => {
@@ -151,7 +151,7 @@
       return desktop ? `<div class="hidden md:flex items-center ${base}"><i data-lucide="calendar" class="mr-1.5" width="14" height="14"></i>${t}</div>` : `<div class="md:hidden flex items-center ${base} mt-3 w-fit ml-10"><i data-lucide="calendar" class="mr-1.5" width="14" height="14"></i>${t}</div>`;
     };
     const subtasksHtml = (task) => `
-      <div class="px-6 pb-6 pt-2 bg-white/60 border-t border-white/30">
+      <div class="px-6 pb-6 pt-2 bg-white/30 border-t border-white/30">
         <h4 class="text-md font-semibold mb-3 ml-10">詳細タスク:</h4>
         <ul class="space-y-3">
           ${task.subtasks.map((sub, idx) => subtaskItemHtml(task.id, idx, sub)).join('')}
@@ -162,7 +162,7 @@
       if (sub.text) {
         return `<li class="flex items-start ${opacity}">${checkboxHtml(taskId, idx, sub.completed)}<span class="${sub.completed ? 'line-through' : ''}">${sub.text}</span></li>`;
       }
-      return `<li class="flex items-start ${opacity}">${checkboxHtml(taskId, idx, sub.completed)}<div class="w-full"><div class="flex items-center font-medium ${sub.completed ? 'line-through' : ''}"><i data-lucide="${sub.icon}" width="20" height="20" class="text-neon-yellow"></i><span class="ml-2">${sub.type}</span></div>${sub.details && sub.details.length ? `<div class="pl-8 mt-2 space-y-1 text-sm">${sub.details.map(d => `<div class="flex justify-between"><span>${d.name}</span><span class"font-mono bg-white/20 px-2 py-0.5 rounded">${d.duration}</span></div>`).join('')}</div>` : ''}</div></li>`;
+      return `<li class="flex items-start ${opacity}">${checkboxHtml(taskId, idx, sub.completed)}<div class="w-full"><div class="flex items-center font-medium ${sub.completed ? 'line-through' : ''}"><i data-lucide="${sub.icon}" width="20" height="20" class="text-neon-yellow"></i><span class="ml-2">${sub.type}</span></div>${sub.details && sub.details.length ? `<div class="pl-8 mt-2 space-y-1 text-sm">${sub.details.map(d => `<div class="flex justify-between"><span>${d.name}</span><span class"font-mono bg-white/10 px-2 py-0.5 rounded">${d.duration}</span></div>`).join('')}</div>` : ''}</div></li>`;
     };
     const iconColor = (icon) => ({ target:'text-neon-purple','check-circle':'text-neon-blue','edit-3':'text-neon-pink',film:'text-neon-yellow','upload-cloud':'text-neon-blue',rocket:'text-neon-purple'}[icon] || 'text-white');
 
@@ -304,7 +304,7 @@
     };
 
     const uChip = (name) => {
-      return `<span class="px-3 py-1 bg-white/20 rounded-full cursor-pointer hover:bg-white/40 transition text-sm" onclick="selectUser('${name}')">${name}</span>`;
+      return `<span class="px-3 py-1 bg-white/10 rounded-full cursor-pointer hover:bg-white/30 transition text-sm" onclick="selectUser('${name}')">${name}</span>`;
     };
 
     const mainHtml = () => {
@@ -355,7 +355,7 @@
 
     const subtasksHtml = (task) => {
       return `
-        <div class="px-6 pb-6 pt-2 bg-white/60 border-t border-white/30">
+        <div class="px-6 pb-6 pt-2 bg-white/30 border-t border-white/30">
           <h4 class="text-md font-semibold mb-3 ml-10">隧ｳ邏ｰ繧ｿ繧ｹ繧ｯ:</h4>
           <ul class="space-y-3">
             ${task.subtasks.map((sub, idx) => subtaskItemHtml(task.id, idx, sub)).join('')}
@@ -368,7 +368,7 @@
       if (sub.text) {
         return `<li class="flex items-start ${opacity}">${checkboxHtml(taskId, idx, sub.completed)}<span class="${sub.completed ? 'line-through' : ''}">${sub.text}</span></li>`;
       }
-      return `<li class="flex items-start ${opacity}">${checkboxHtml(taskId, idx, sub.completed)}<div class="w-full"><div class="flex items-center font-medium ${sub.completed ? 'line-through' : ''}"><i data-lucide="${sub.icon}" width="20" height="20" class="text-neon-yellow"></i><span class="ml-2">${sub.type}</span></div>${sub.details && sub.details.length ? `<div class="pl-8 mt-2 space-y-1 text-sm">${sub.details.map(d => `<div class="flex justify-between"><span>${d.name}</span><span class="font-mono bg-white/20 px-2 py-0.5 rounded">${d.duration}</span></div>`).join('')}</div>` : ''}</div></li>`;
+      return `<li class="flex items-start ${opacity}">${checkboxHtml(taskId, idx, sub.completed)}<div class="w-full"><div class="flex items-center font-medium ${sub.completed ? 'line-through' : ''}"><i data-lucide="${sub.icon}" width="20" height="20" class="text-neon-yellow"></i><span class="ml-2">${sub.type}</span></div>${sub.details && sub.details.length ? `<div class="pl-8 mt-2 space-y-1 text-sm">${sub.details.map(d => `<div class="flex justify-between"><span>${d.name}</span><span class="font-mono bg-white/10 px-2 py-0.5 rounded">${d.duration}</span></div>`).join('')}</div>` : ''}</div></li>`;
     };
 
     const iconColor = (icon) => {
