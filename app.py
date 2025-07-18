@@ -108,7 +108,7 @@ def toggle_task(checklist_id, task_id):
         task.completed_at = None
     db.session.commit()
     
-    return jsonify({'success': True})
+    return jsonify({'success': True, 'is_completed': task.is_completed, 'completed_at': task.completed_at.isoformat() if task.completed_at else None})
 
 @app.route('/checklist/<int:checklist_id>/task/<int:task_id>/comment', methods=['POST'])
 @login_required
@@ -125,7 +125,46 @@ def add_comment(checklist_id, task_id):
     db.session.add(comment)
     db.session.commit()
     
-    return jsonify({'success': True})
+    return jsonify({
+        'success': True,
+        'comment': {
+            'id': comment.id,
+            'content': comment.content,
+            'user_name': comment.user.username,
+            'created_at': comment.created_at.isoformat()
+        }
+    })
+
+@app.route('/api/checklist/<int:checklist_id>/updates')
+@login_required
+def get_checklist_updates(checklist_id):
+    checklist = Checklist.query.get_or_404(checklist_id)
+    
+    tasks_data = []
+    for task in checklist.tasks:
+        comments_data = []
+        for comment in task.comments:
+            comments_data.append({
+                'id': comment.id,
+                'content': comment.content,
+                'user_name': comment.user.username,
+                'created_at': comment.created_at.isoformat()
+            })
+        
+        tasks_data.append({
+            'id': task.id,
+            'title': task.title,
+            'description': task.description,
+            'is_completed': task.is_completed,
+            'completed_at': task.completed_at.isoformat() if task.completed_at else None,
+            'comments': comments_data
+        })
+    
+    return jsonify({
+        'success': True,
+        'tasks': tasks_data,
+        'last_updated': datetime.utcnow().isoformat()
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
