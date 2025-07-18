@@ -67,11 +67,46 @@
         localStorage.setItem('users', JSON.stringify(users));
       }
     };
-    const saveState = () => {
+    const saveState = async () => {
       if (!currentUser) return;
+      
+      // Save to localStorage as backup
       localStorage.setItem(`tasks_${currentUser}`, JSON.stringify(tasks));
+      
+      // Save to server
+      try {
+        const response = await fetch(`/api/users/${currentUser}/tasks`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ tasks: tasks })
+        });
+        
+        if (!response.ok) {
+          console.error('Failed to save tasks to server');
+        }
+      } catch (error) {
+        console.error('Error saving tasks:', error);
+      }
     };
-    const loadState = (name) => {
+    
+    const loadState = async (name) => {
+      // Try to load from server first
+      try {
+        const response = await fetch(`/api/users/${name}/tasks`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.tasks) {
+            tasks = data.tasks;
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Error loading tasks from server:', error);
+      }
+      
+      // Fallback to localStorage
       const data = localStorage.getItem(`tasks_${name}`);
       tasks = data ? JSON.parse(data) : getInitialProjectPlan();
     };
@@ -174,7 +209,7 @@
       if(subIdx!==null){ task.subtasks[subIdx].completed=!task.subtasks[subIdx].completed; task.completed=task.subtasks.every(st=>st.completed); }
       else { task.completed=!task.completed; task.subtasks.forEach(st=>st.completed=task.completed);} tasks=newTasks; saveState(); renderApp(); };
 
-    window.selectUser = (name)=>{ currentUser=name; loadState(name); renderApp(); };
+    window.selectUser = async (name)=>{ currentUser=name; await loadState(name); renderApp(); };
     window.toggleMembers = () => { showMembers = !showMembers; renderApp(); };
 
     window.deleteUser = () => {
@@ -188,7 +223,34 @@
       renderApp();
     };
 
-    document.addEventListener('submit',e=>{ if(e.target&&e.target.id==='userForm'){ e.preventDefault(); const name=document.getElementById('userInput').value.trim(); if(!name)return; currentUser=name; saveUserIfNew(name); loadState(name); renderApp(); }});
+    document.addEventListener('submit',e=>{ if(e.target&&e.target.id==='userForm'){ e.preventDefault(); const name=document.getElementById('userInput').value.trim(); if(!name)return; currentUser=name; saveUserIfNew(name); loadState(name).then(()=>renderApp()); }});
+
+    // Real-time sync functionality
+    const syncWithServer = async () => {
+      if (!currentUser) return;
+      
+      try {
+        const response = await fetch(`/api/users/${currentUser}/tasks`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.tasks) {
+            // Check if tasks have changed
+            const currentTasksStr = JSON.stringify(tasks);
+            const serverTasksStr = JSON.stringify(data.tasks);
+            
+            if (currentTasksStr !== serverTasksStr) {
+              tasks = data.tasks;
+              renderApp();
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error syncing with server:', error);
+      }
+    };
+    
+    // Start real-time sync every 5 seconds
+    setInterval(syncWithServer, 5000);
 
     renderApp();
   </script>

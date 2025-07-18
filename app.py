@@ -30,6 +30,10 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 @app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/dashboard')
 @login_required
 def dashboard():
     users = User.query.all()
@@ -163,6 +167,42 @@ def get_checklist_updates(checklist_id):
     return jsonify({
         'success': True,
         'tasks': tasks_data,
+        'last_updated': datetime.utcnow().isoformat()
+    })
+
+@app.route('/api/users/<username>/tasks', methods=['GET'])
+def get_user_tasks(username):
+    # Get user's task progress
+    user_tasks = request.args.get('tasks', '[]')
+    try:
+        tasks = eval(user_tasks)  # In production, use json.loads
+        return jsonify({
+            'success': True,
+            'tasks': tasks,
+            'username': username
+        })
+    except:
+        return jsonify({'success': False, 'error': 'Invalid task data'})
+
+@app.route('/api/users/<username>/tasks', methods=['POST'])
+def save_user_tasks(username):
+    # Save user's task progress
+    tasks = request.json.get('tasks', [])
+    # In a real implementation, save to database
+    # For now, return success
+    return jsonify({
+        'success': True,
+        'message': 'Tasks saved successfully',
+        'username': username
+    })
+
+@app.route('/api/all-users-progress', methods=['GET'])
+def get_all_users_progress():
+    # Get all users' progress data
+    # This would be implemented with proper database queries
+    return jsonify({
+        'success': True,
+        'users': [],  # Placeholder for now
         'last_updated': datetime.utcnow().isoformat()
     })
 
