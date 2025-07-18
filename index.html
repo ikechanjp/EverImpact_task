@@ -28,7 +28,10 @@
 
   <script>
     const getInitialProjectPlan = () => [
-      { id: 1, title: '花崎エり & ないとコンサルで方向性決定', duration: null, timeline: null, icon: 'target', subtasks: [], isOpen: true, completed: false },
+      { id: 1, title: '花崎エり & ないとコンサルで方向性決定', duration: null, timeline: null, icon: 'target', subtasks: [
+        { text: 'エリと対話', completed: false },
+        { text: 'ないとと対話', completed: false }
+      ], isOpen: true, completed: false },
       { id: 2, title: '5W1H+USP', duration: '5日', timeline: null, icon: 'check-circle', subtasks: [], isOpen: true, completed: false },
       { id: 3, title: '講師登録', duration: '1日', timeline: null, icon: 'check-circle', subtasks: [], isOpen: true, completed: false },
       { id: 4, title: '目次構成作成 / 台本', duration: '10日', timeline: 'ここまで1ヶ月', icon: 'edit-3', isOpen: true, completed: false,
