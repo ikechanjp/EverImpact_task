@@ -11,7 +11,9 @@
       "Bash(mv:*)",
       "Bash(python:*)",
       "Bash(cp:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(start \"C:\\Users\\noriy\\Desktop\\開発\\EverImpact_task\\index.html\")",
+      "Bash(explorer:*)"
     ],
     "deny": []
   }
